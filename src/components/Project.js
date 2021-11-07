@@ -1,28 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { sampleIssues } from "../testData/sampleIssues";
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { sampleIssues } from '../testData/sampleIssues';
 
-function Project({ project }) {
-  const [issues, setIssues] = useState(sampleIssues);
+function Project({ projects }) {
+  const [name, setName] = useState('');
+  const [issues, setIssues] = useState([]);
+  const { projectID } = useParams();
 
   // const getIssues = async () => {
-  //   // url grabs local file currently
-  //   const url = "./testData/sampleIssues";
-  //   const response = await fetch(url);
+  //   const response = await fetch('../testData/sampleIssues');
   //   const data = await response.json();
-  //   console.log(data);
   //   setIssues(data);
+  //   console.log(data);
   // };
 
-  // useEffect(() => {
-  //   getIssues();
-  // }, []);
+  useEffect(() => {
+    const newProject = projects.find(
+      (project) => project.id === parseInt(projectID)
+    );
+    setName(newProject.name);
+    // getIssues();
+    setIssues(sampleIssues);
+  }, [projectID, projects]);
+
+  const issuesElements = issues.map((issue) => (
+    <Link to={`${projectID}/issues/${issue.id}`}>
+      <p>{issue.error.name}</p>
+    </Link>
+  ));
 
   return (
     <>
-      <h2>{project.name}</h2>
-      {issues.map((issue) => (
-        <p>{issue.error.name}</p>
-      ))}
+      <h2>{name}</h2>
+      {issuesElements}
     </>
   );
 }
