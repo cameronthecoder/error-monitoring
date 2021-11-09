@@ -1,38 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, Outlet } from 'react-router-dom';
 import { sampleIssues } from '../testData/sampleIssues';
 
-function Project({ projects }) {
-  const [name, setName] = useState('');
-  const [issues, setIssues] = useState([]);
+function Project() {
+  const [project, setProject] = useState({
+    api_key: '',
+    created_at: '',
+    id: 0,
+    name: '',
+    user_id: '',
+  });
   const { projectID } = useParams();
 
-  // const getIssues = async () => {
-  //   const response = await fetch('../testData/sampleIssues');
-  //   const data = await response.json();
-  //   setIssues(data);
-  //   console.log(data);
-  // };
+  const getProject = async () => {
+    const response = await fetch(
+      `http://localhost:5000/api/projects/${projectID}/`
+    );
+    const data = await response.json();
+    setProject(data);
+  };
 
   useEffect(() => {
-    const newProject = projects.find(
-      (project) => project.id === parseInt(projectID)
-    );
-    setName(newProject.name);
-    // getIssues();
-    setIssues(sampleIssues);
-  }, [projectID, projects]);
-
-  const issuesElements = issues.map((issue) => (
-    <Link to={`${projectID}/issues/${issue.id}`}>
-      <p>{issue.error.name}</p>
-    </Link>
-  ));
+    getProject();
+  }, []);
 
   return (
     <>
-      <h2>{name}</h2>
-      {issuesElements}
+      <h2>
+        <Link to={`/projects/${projectID}`}>{project.name}</Link>
+      </h2>
+      <Outlet />
     </>
   );
 }

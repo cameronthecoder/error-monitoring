@@ -1,44 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Project from './components/Project';
 import Issue from './components/Issue';
+import Issues from './components/Issues';
+import Error from './components/Error';
+import About from './pages/About';
 import './index.css';
+import Projects from './components/Projects';
+import Navigation from './components/Navigation';
 
 function App() {
-  const [projects, setProjects] = useState([]);
-
-  const getProjects = async () => {
-    const url = 'http://127.0.0.1:5000/api/projects/';
-    const response = await fetch(url);
-    const data = await response.json();
-    setProjects(data.projects);
-  };
-
-  useEffect(() => {
-    getProjects();
-  }, []);
   return (
     <Router>
-      <Switch>
-        <Route
-          exact
-          path='/'
-          component={() => (
-            <Home projects={projects} setProjects={setProjects} />
-          )}
-        />
-        <Route
-          exact
-          path='/projects/:projectID'
-          children={<Project projects={projects} setProjects={setProjects} />}
-        />
-        <Route
-          path='/projects/:projectID/issues/:issueID'
-          children={<Issue />}
-        />
-        <Route path='*' />
-      </Switch>
+      <Navigation />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='projects'>
+          <Route index element={<Projects />} />
+          <Route path=':projectID' element={<Project />}>
+            <Route index element={<Issues />} />
+            <Route path='issues/:issueID' element={<Issue />} />
+          </Route>
+        </Route>
+        <Route path='about' element={<About />} />
+        <Route path='*' element={<Error />} />
+      </Routes>
     </Router>
   );
 }
